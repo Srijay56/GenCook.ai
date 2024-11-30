@@ -1,10 +1,9 @@
 import tkinter as tk
-from tkinter import Listbox, Text
+from tkinter import ttk, Text
 import pyttsx3
 import openai
 
-
-openai.api_key = "Input OpenAI API Key"
+openai.api_key = "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"
 
 engine = pyttsx3.init()
 engine.setProperty('rate', 150)
@@ -18,49 +17,74 @@ class CookingAssistant:
     def __init__(self, root):
         self.root = root
         self.root.title("GenCook")
-
+        self.root.geometry("700x800")
+        self.root.configure(bg="#e8f5e9")  # Light green background
 
         self.ingredients = []
         self.generated_recipes = []
 
+        # Styling using ttk
+        self.style = ttk.Style()
+        self.style.configure("TButton", font=("Arial", 12), padding=10, relief="raised")
+        self.style.configure("TLabel", font=("Arial", 14, "bold"), background="#e8f5e9", foreground="#333")
+        self.style.configure("TEntry", font=("Arial", 12), padding=5)
 
-        tk.Label(root, text="Enter an ingredient:").grid(row=0, column=0, padx=10, pady=5)
-        self.ingredient_entry = tk.Entry(root, width=25)
-        self.ingredient_entry.grid(row=0, column=1, padx=10, pady=5)
+        # Header
+        header_label = ttk.Label(root, text="GenCook.ai", style="TLabel")
+        header_label.pack(pady=10)
 
+        # Input Section
+        input_frame = ttk.Frame(root)
+        input_frame.pack(pady=10)
 
-        add_button = tk.Button(root, text="Add Ingredient", command=self.add_ing)
-        add_button.grid(row=0, column=2, padx=10, pady=5)
+        ingredient_label = ttk.Label(input_frame, text="Enter an ingredient:", style="TLabel")
+        ingredient_label.grid(row=0, column=0, padx=5, pady=5)
 
+        self.ingredient_entry = ttk.Entry(input_frame, width=30)
+        self.ingredient_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        tk.Label(root, text="Ingredients List:").grid(row=1, column=0, padx=10)
-        self.ingredients_listbox = Listbox(root, width=30, height=6)
-        self.ingredients_listbox.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+        add_button = ttk.Button(input_frame, text="Add Ingredient", command=self.add_ing)
+        add_button.grid(row=0, column=2, padx=5, pady=5)
 
+        # Ingredients List
+        self.ingredients_listbox = tk.Listbox(root, font=("Arial", 12), width=40, height=6, bg="#fff", bd=2, relief="sunken")
+        self.ingredients_listbox.pack(pady=10)
 
-        clear_button = tk.Button(root, text="Clear Ingredients", command=self.clear_ing)
-        clear_button.grid(row=3, column=0, pady=10)
+        clear_button = ttk.Button(root, text="Clear Ingredients", command=self.clear_ing)
+        clear_button.pack(pady=10)
 
+        # Recipe Generation Section
+        generate_frame = ttk.Frame(root)
+        generate_frame.pack(pady=10, fill="x")  # Center horizontally
 
-        generate_button = tk.Button(root, text="Generate Recipe", command=self.gen_recipe)
-        generate_button.grid(row=3, column=1, pady=10)
+        generate_button = ttk.Button(generate_frame, text="Generate Recipe", command=self.gen_recipe)
+        generate_button.pack(pady=10)  # Automatically centers within the frame
 
+        # Recipes List Section
+        recipe_label = ttk.Label(root, text="Select a Recipe:", style="TLabel")
+        recipe_label.pack(pady=10)
 
-        tk.Label(root, text="Select a Recipe:").grid(row=4, column=0, padx=10)
-        self.recipes_listbox = Listbox(root, width=30, height=6)
-        self.recipes_listbox.grid(row=5, column=0, columnspan=2, padx=10, pady=10)
+        self.recipes_listbox = tk.Listbox(root, font=("Arial", 12), width=40, height=6, bg="#fff", bd=2, relief="sunken")
+        self.recipes_listbox.pack(pady=10)
+        self.recipes_listbox.bind("<<ListboxSelect>>", self.recipe_selected)  # Bind the selection event
 
+        # Recipe Details Section
+        details_label = ttk.Label(root, text="Generated Recipe Details:", style="TLabel")
+        details_label.pack(pady=10)
 
-        guide_button = tk.Button(root, text="Show Guide", command=self.show_guide)
-        guide_button.grid(row=6, column=1, pady=10)
+        # Frame for recipe details with scrollbar
+        recipe_frame = tk.Frame(root, bg="#e8f5e9")
+        recipe_frame.pack(pady=10, fill="both", expand=True)
 
+        self.recipe_textbox = tk.Text(recipe_frame, wrap="word", font=("Arial", 12), width=70, height=20, bg="#fff", bd=2, relief="sunken")
+        self.recipe_textbox.pack(side="left", fill="both", expand=True)
 
-        tk.Label(root, text="Generated Recipe Details:").grid(row=7, column=0, padx=10)
-        self.recipe_textbox = Text(root, wrap="word", width=50, height=10)
-        self.recipe_textbox.grid(row=8, column=0, columnspan=3, padx=10, pady=10)
+        recipe_scrollbar = ttk.Scrollbar(recipe_frame, orient="vertical", command=self.recipe_textbox.yview)
+        recipe_scrollbar.pack(side="right", fill="y")
+
+        self.recipe_textbox.config(yscrollcommand=recipe_scrollbar.set)
 
     def add_ing(self):
-
         ingredient = self.ingredient_entry.get().strip().lower()
         if ingredient and ingredient not in self.ingredients:
             self.ingredients.append(ingredient)
@@ -68,7 +92,6 @@ class CookingAssistant:
             self.ingredient_entry.delete(0, tk.END)  # Clear entry box
 
     def clear_ing(self):
-
         self.ingredients = []
         self.ingredients_listbox.delete(0, tk.END)
         self.recipe_textbox.delete(1.0, tk.END)
@@ -76,27 +99,26 @@ class CookingAssistant:
 
     def gen_recipe(self):
         if self.ingredients:
-
             ingredients_text = ", ".join(self.ingredients)
             messages = [
                 {"role": "system", "content": "You are a helpful cooking assistant."},
-                {"role": "user", "content": f"Provide 3 recipe ideas using these ingredients: {ingredients_text}."}
+                {"role": "user", "content": f"Generate 3 recipe ideas using the following ingredients: {ingredients_text}. Include the title of the recipe and a brief description."}
             ]
 
             try:
-
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=messages,
-                    max_tokens=200,
+                    max_tokens=300,
                     temperature=0.7
                 )
                 recipes = response['choices'][0]['message']['content'].strip()
-                self.generated_recipes = recipes.split("\n")  # Split recipes into separate ideas
+
+                # Ensure the response is a clean list of recipes
+                self.generated_recipes = recipes.split("\n")
                 self.recipes_listbox.delete(0, tk.END)  # Clear previous recipes
                 for recipe in self.generated_recipes:
                     self.recipes_listbox.insert(tk.END, recipe)  # Display recipes in the listbox
-
 
                 speak("Here are three recipe ideas for you. Select one.")
 
@@ -106,35 +128,39 @@ class CookingAssistant:
         else:
             speak("Please add ingredients to generate a recipe.")
 
-    def show_guide(self):
-
+    def recipe_selected(self, event):
         selected_index = self.recipes_listbox.curselection()
         if selected_index:
             selected_recipe = self.generated_recipes[selected_index[0]]
-            messages = [
-                {"role": "system", "content": "You are a helpful cooking assistant."},
-                {"role": "user", "content": f"Provide detailed cooking instructions for this recipe: {selected_recipe}"}
-            ]
+            self.display_recipe_guide(selected_recipe)
 
-            try:
+    def display_recipe_guide(self, selected_recipe):
+        messages = [
+            {"role": "system", "content": "You are a helpful cooking assistant."},
+            {"role": "user", "content": f"Provide detailed step-by-step cooking instructions for the following recipe: {selected_recipe}"}
+        ]
 
-                response = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
-                    messages=messages,
-                    max_tokens=250,
-                    temperature=0.7
-                )
-                guide = response['choices'][0]['message']['content'].strip()
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=messages,
+                max_tokens=500,  # Increase token limit for longer recipes
+                temperature=0.7
+            )
+            guide = response['choices'][0]['message']['content'].strip()
+
+            # Ensure the guide is properly formatted
+            if guide:
                 self.recipe_textbox.delete(1.0, tk.END)
                 self.recipe_textbox.insert(tk.END, guide)
                 speak("Here are the instructions to prepare the recipe.")
+            else:
+                self.recipe_textbox.delete(1.0, tk.END)
+                self.recipe_textbox.insert(tk.END, "Sorry, there was an issue with generating the recipe instructions.")
 
-            except Exception as e:
-                print(f"Error generating guide: {e}")
-                speak("Sorry, there was a problem generating your guide.")
-        else:
-            speak("Please select a recipe from the list.")
-
+        except Exception as e:
+            print(f"Error generating guide: {e}")
+            speak("Sorry, there was a problem generating your guide.")
 
 
 root = tk.Tk()
