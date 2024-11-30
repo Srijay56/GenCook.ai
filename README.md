@@ -4,4 +4,7 @@ Thank you for using Gencook.ai. This app allows is meant for users who don't kno
 SOME MINOR ISSUES:
 
 -When a food is selected, the user must wait five seconds for the generation to happen. Please do not overclick the food item you want
+
 -The windowed tab is small, but you have the ability to stretch it out however you like
+
+-
