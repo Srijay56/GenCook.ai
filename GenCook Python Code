@@ -3,7 +3,7 @@ from tkinter import ttk, Text
 import pyttsx3
 import openai
 
-openai.api_key = "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"
+openai.api_key = "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"
 
 engine = pyttsx3.init()
 engine.setProperty('rate', 150)
