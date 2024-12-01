@@ -1,0 +1,5 @@
+ADDITIONAL LIBRARIES FOR IDE:
+
+-Pyttsx3
+-Tkinter
+-OpenAI
