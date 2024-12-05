@@ -3,7 +3,7 @@ from tkinter import ttk, Text
 import pyttsx3
 import openai
 
-openai.api_key = "PASTE IN THE KEY FROM ADDITIONAL INFO TAB"
+openai.api_key = "PASTE IN AN OPENAI API KEY"
 
 engine = pyttsx3.init()
 engine.setProperty('rate', 150)
