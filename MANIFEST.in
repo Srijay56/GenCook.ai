@@ -1,0 +1,6 @@
+include app.py
+include requirements.txt
+include .env.example
+include CONTRIBUTING.md
+include uv.lock
+recursive-include docs *.md
